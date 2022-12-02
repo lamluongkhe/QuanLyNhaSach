@@ -1,0 +1,11 @@
+*{
+    font-family:arial;
+}
+
+body{
+    background-color:MediumSlateBlue;
+}
+.card-img-top{
+    width: 251px;
+    height: 241px;
+}
