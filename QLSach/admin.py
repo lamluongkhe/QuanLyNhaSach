@@ -1,4 +1,4 @@
-from QLSach.models import Category,Product,User,UserRole,UserEnum
+from QLSach.models import Category,Product,User,UserRole,UserEnum,Tag
 from QLSach import db,app,dao
 from flask_admin import Admin,BaseView,expose
 from flask_admin.contrib.sqla import ModelView
@@ -59,6 +59,7 @@ class StatsView(BaseView):
 
 
 class LogoutView(BaseView):
+
     @expose('/')
     def index(self):
         logout_user()
@@ -67,6 +68,7 @@ class LogoutView(BaseView):
 
 
 admin.add_view(AuthenticatedModelView(Category,db.session,name='Danh mục'))
+admin.add_view(AuthenticatedModelView(Tag,db.session,name='Tag'))
 admin.add_view(ProductView(Product,db.session,name='Sản Phẩm'))
 admin.add_view(StatsView(name='Thống kê'))
 admin.add_view(LogoutView(name='Đăng xuất'))

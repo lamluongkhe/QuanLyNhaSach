@@ -55,7 +55,7 @@ def cart():
     #         , "quantity": 2
     #     }
     # }
-    return render_template('cart.html');
+    return render_template('cart.html')
 
 
 @app.route('/products/<int:product_id>')
@@ -90,7 +90,9 @@ def login_my_user():
 
         if user:
             login_user(user=user)
-            return redirect('/')
+
+            n = request.args.get("next")
+            return redirect(n if n else '/')
 
     return render_template('login.html')
 
@@ -101,12 +103,25 @@ def logout_my_user():
     return redirect('/login')
 
 
+@app.route('/api/cart/<product_id>', methods=['put'])
+def update_cart(product_id):
+    key = app.config['CART_KEY']
+    cart = session.get(key)
+
+    if cart and product_id in cart:
+        cart[product_id]['quantity'] = int(request.json['quantity'])
+
+    session[key] = cart
+
+    return jsonify(utils.cart_stats(cart))
+
 @app.context_processor
 def common_attr():
     categories = dao.load_categories()
 
     return {
-        'categories': categories
+        'categories': categories,
+        'cart': utils.cart_stats(session.get(app.config['CART_KEY']))
     }
 
 
@@ -141,6 +156,37 @@ def register():
             err_mess = "Mật khẩu KHÔNG đúng!!!"
 
     return render_template('register.html', err_mess=err_mess)
+
+
+
+@app.route('/api/pay')
+@login_required
+def pay():
+    key = app.config['CART_KEY']
+    cart = session.get(key)
+
+    if cart:
+        try:
+            dao.save_receipt(cart=cart)
+        except Exception as ex:
+            print(str(ex))
+            return jsonify({"status": 500})
+        else:
+            del session[key]
+
+    return jsonify({"status": 200})
+
+@app.route('/api/cart/<product_id>', methods=['delete'])
+def delete_cart(product_id):
+    key = app.config['CART_KEY']
+    cart = session.get(key)
+
+    if cart and product_id in cart:
+        del cart[product_id]
+
+    session[key] = cart
+
+    return jsonify(utils.cart_stats(cart))
 
 
 if __name__ == '__main__':
