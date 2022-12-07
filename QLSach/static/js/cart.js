@@ -1,10 +1,10 @@
 function addToCart(id, name, price) {
-    fetch("/api/cart", {
-        method: "post",
+    fetch('/api/cart', {
+        method: 'post',
         body: JSON.stringify({
-            "id": id,
-            "name": name,
-            "price": price
+            'id': id,
+            'name': name,
+            'price': price
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -14,8 +14,11 @@ function addToCart(id, name, price) {
         let d = document.getElementsByClassName('cart-counter')
         for (let i = 0; i < d.length; i++)
             d[i].innerText = data.total_quantity
+    }).catch(function(err){
+        console.error(err)
     }) // promise
 }
+
 
 function updateCart(productId, obj) {
    fetch(`/api/cart/${productId}`, {

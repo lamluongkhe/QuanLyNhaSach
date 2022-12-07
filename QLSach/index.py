@@ -16,12 +16,11 @@ def index():
 
 @app.route('/api/cart/', methods=['post'])
 def add_to_cart():
-    key = app.config['CART_KEY']
-    cart = session[key] if key in session else {}
-
     data = request.json
     id = str(data['id'])
 
+    key = app.config['CART_KEY']  # 'cart'
+    cart = session[key] if key in session else {}
     if id in cart:
         cart[id]['quantity'] += 1
     else:
@@ -29,14 +28,15 @@ def add_to_cart():
         price = data['price']
 
         cart[id] = {
-                       "id": id
-                       , "name": name
-                       , "price": price
-                       , "quantity": 1
-                   },
+            "id": id,
+            "name": name,
+            "price": price,
+            "quantity": 1
+        }
+
     session[key] = cart
 
-    return jsonify(utils.cart_stats(cart))
+    return jsonify(utils.cart_stats(cart=cart))
 
 
 @app.route('/cart')
