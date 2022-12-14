@@ -1,9 +1,12 @@
 from flask import render_template, request, redirect, session, jsonify
-from QLSach import dao, app, admin, login, utils
+from QLSach import dao, app, admin, login, utils, clients
 from flask_login import login_user, logout_user, current_user, login_required
 from QLSach.decorators import anonymous_user
 from QLSach.models import UserRole
 import cloudinary.uploader
+
+
+
 
 
 @app.route("/")
@@ -11,6 +14,7 @@ def index():
     kw = request.args.get('keyword')
     cate_id = request.args.get('category_id')
     products = dao.load_products(cate_id, kw)
+
     return render_template('index.html', products=products)
 
 
@@ -75,6 +79,7 @@ def login_admin():
         login_user(user=user)
 
     return redirect('/admin')
+
 
 
 @app.route('/login', methods=['get', 'post'])
@@ -168,11 +173,13 @@ def pay():
     if cart:
         try:
             dao.save_receipt(cart=cart)
+            # clients.SMS(current_user.name)
         except Exception as ex:
             print(str(ex))
             return jsonify({"status": 500})
         else:
             del session[key]
+
 
     return jsonify({"status": 200})
 
@@ -187,6 +194,8 @@ def delete_cart(product_id):
     session[key] = cart
 
     return jsonify(utils.cart_stats(cart))
+
+
 
 
 if __name__ == '__main__':

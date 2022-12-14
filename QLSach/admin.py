@@ -1,4 +1,4 @@
-from QLSach.models import Category,Product,User,UserRole,UserEnum,Tag
+from QLSach.models import Category,Product,User,UserRole,UserEnum,Tag,ChiTietPhieuNhap,PhieuNhap,Author,QuiDinh
 from QLSach import db,app,dao
 from flask_admin import Admin,BaseView,expose
 from flask_admin.contrib.sqla import ModelView
@@ -67,8 +67,29 @@ class LogoutView(BaseView):
         return redirect('/admin')
 
 
+class PhieuNhapView(AuthenticatedModelView):
+    column_exclude_list = ['chitiets']
+    form_excluded_columns = ['chitiets']
+
+
+class ChiTietPhieuNhapView(AuthenticatedModelView):
+    column_exclude_list = ['chitiets']
+    form_excluded_columns = ['chitiets']
+    # column_list = ('Sach_id','category_id','author_id','soLuong','PhieuNhap_id')
+
+class QDView(AuthenticatedModelView):
+    can_edit = True
+    can_create = None
+    can_delete = None
+
+
+
 admin.add_view(AuthenticatedModelView(Category,db.session,name='Danh mục'))
 admin.add_view(AuthenticatedModelView(Tag,db.session,name='Tag'))
+admin.add_view(AuthenticatedModelView(Author,db.session,name='Tác giả'))
 admin.add_view(ProductView(Product,db.session,name='Sản Phẩm'))
+admin.add_view(PhieuNhapView(PhieuNhap,db.session,name='Phiếu Nhập'))
+admin.add_view(ChiTietPhieuNhapView(ChiTietPhieuNhap,db.session,name='Chi Tiết Phiếu Nhập'))
 admin.add_view(StatsView(name='Thống kê'))
+admin.add_view(QDView(QuiDinh,db.session,name='Qui Định'))
 admin.add_view(LogoutView(name='Đăng xuất'))

@@ -4,6 +4,11 @@ from urllib.parse import quote
 from flask_login import LoginManager
 from flask_babelex import Babel
 import cloudinary
+from twilio.rest import Client
+from QLSach import keys
+
+
+client=Client(keys.account_sid, keys.auth_token)
 
 
 app=Flask(__name__)
@@ -20,6 +25,9 @@ db=SQLAlchemy(app=app)
 login=LoginManager(app=app)
 
 babel=Babel(app=app)
+
+
+
 
 @babel.localeselector
 def load_locale():
